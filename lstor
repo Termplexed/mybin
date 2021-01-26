@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import sys
+from os import path
+import libtorrent
+
+def sz_fmt(num, suffix='B'):
+    for unit in ['  ','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return ("%." + ("0" if unit == '  ' else "3") + "f %s%s") % (num, unit, suffix)
+        num /= 1024.0
+    return "%.3f%s%s" % (num, 'Yi', suffix)
+
+def lst_tor(f):
+    # get names of files in the torrent file
+    info = libtorrent.torrent_info(f);
+    sz = info.total_size()
+    print(
+        "\033[1m%s\n"
+        "Total: %s (%s) in %d files\033[0m" %
+        (f, sz_fmt(sz), "{:,}".format(sz), info.num_files())
+    )
+    dir=""
+    for f in info.files():
+        # print(dir(f))
+        fd = path.dirname(f.path)
+        if fd != dir:
+            dir = fd
+            print("\033[44;1m%s\033[0m" % dir)
+        print("%16s  %s" % (sz_fmt(f.size), path.basename(f.path)))
+
+# get the input torrent file
+if (len(sys.argv) > 1):
+    for f in sys.argv[1:]:
+        if not path.isfile(f):
+            print("Skipping: %s" % f)
+            continue
+        lst_tor(f)
+        print("--------------------------------------")
+    # torrent = sys.argv[1]
+else:
+    print("Missing param: torrent filename")
+    sys.exit()
