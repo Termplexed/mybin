@@ -1,0 +1,2 @@
+# mybin
+Various linux scripts
