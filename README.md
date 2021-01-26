@@ -2,7 +2,7 @@
 
 Various linux scripts
 
-### `binhelp` : print number(s) in various representaions.
+### (bash|awk) `binhelp` : print number(s) in various representaions.
 ```
 $ binhelp 136:139
 From: (0x88 to 0x8B) (0o210 to 0o213) (136. to 139.)
@@ -12,7 +12,7 @@ From: (0x88 to 0x8B) (0o210 to 0o213) (136. to 139.)
       139.  0000 0000 1000 1011  0x0000008b        213o
 ```
 
-### `mkvarious` : create executable script file with appropriate shebang
+###  (bash) `mkvarious` : create executable script file with appropriate shebang
 
 1. Put it in for example `~/bin`
 2. Create links for types:
@@ -25,6 +25,8 @@ Opens file with `$ed` (set in script to vim) if no second option is used.
 
 Modify script to meet your needs.
 
-### `lstor` : list contents of torrent files
+### (python) `lstor` : list contents of torrent files
+
+Example:
 
 `lstor some.torrent`
