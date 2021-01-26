@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Reads executing file to determine environment
+#
+# 1. ln -s mkvarious mksh
+#
+# Then:
+# 2. mksh foo
+#
+# Creates file with shebang for "sh" and executeable flag set
+
+ed=vim
+
+t=${0##*/}
+t=${t:2}
+
+p='%s\n\n\n'
+case "$t" in
+php)  e=$t; p='%s\n<?php\n\n?>\n';;
+python) e=python3 ;;
+sh|ksh|zsh|csh|bash) b="/bin/$t" ;;
+esac
+
+if [ -z "$1" ]; then
+	printf "Usage: %s <FILE>\n" "$(basename $0)" >&2
+        printf "  Create an executeable \`%s' file with #shebang\n" "$t"
+	exit 1
+fi
+
+if [ -e "$1" ]; then
+	printf "File \`%s' aleady exists.\n" "$1" >&2
+	exit 1
+fi
+
+if ! touch "$1"; then
+	printf "Unable to touch \`%s'\n" "$1" >&2
+	exit 1
+fi
+
+echo $t
+
+! [[ -z "$e" ]] && b="/usr/bin/env $e"
+
+printf -- "#!$p" "$b" >>$1
+chmod +x "$1"
+(($# < 2)) && $ed "$1"
+
