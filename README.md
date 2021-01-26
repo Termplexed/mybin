@@ -24,3 +24,7 @@ From: (0x88 to 0x8B) (0o210 to 0o213) (136. to 139.)
 Opens file with `$ed` (set in script to vim) if no second option is used.
 
 Modify script to meet your needs.
+
+### `lstor` : list contents of torrent files
+
+`lstor some.torrent`
