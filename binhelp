@@ -1,0 +1,98 @@
+#!/bin/bash
+
+prnt_bin()
+{
+	awk -v nr="$1" -v fm="$2" -v sp="$3" -v wd="$4" '
+function bits2str(bits, data, mask)
+{
+	ps = sp
+	i  = 0
+	mask = 1
+	for (; bits != 0; bits = rshift(bits, 1)) {
+		data = (and(bits, mask) ? "1" : "0") data
+		if (++i % ps == 0)
+			data = " " data
+	}
+	if (i >= wd)
+		return data ~ /^ / ? substr(data, 2) : data
+	while ((++i % (wd)) != 0) {
+		data = "0" data
+		if (i % ps == 0)
+			data = " " data
+	}
+	data = "0" data
+	return data
+}
+BEGIN {
+	if (sp !~ /^[0-9]+$/ || sp == 0)
+		sp = 1
+	if (wd !~ /^[0-9]+$/ || wd == 0)
+		wd = 4
+	out=""
+	for (k = 1; k <= length(fm); ++k) {
+		f=substr(fm, k, 1);
+		if (out != "")
+			out=out"  "
+		if (f == "d")
+			out=out sprintf("%9d.", nr);
+		else if (f == "b")
+			out=out sprintf("%s", bits2str(nr));
+		else if (f == "x")
+			out=out sprintf("0x%08x", nr);
+		else if (f == "o")
+			out=out sprintf("%9oo", nr);
+		else
+			printf("Bad format option: %s\n", f);
+	}
+	print out;
+}
+'
+}
+
+declare -i sp=4
+declare -i wd=16
+fm="dbxo"
+while [[ -n "$1" ]]; do
+	case "$1" in
+	"f")  fm="$2"; shift;;
+	"g")  sp="$2"; shift;;
+	"w")  wd="$2"; shift;;
+	"wg") sp="$2"; wd="$3"; shift; shift;;
+	"gw") wd="$2"; sp="$3"; shift; shift;;
+	*) break;;
+	esac
+	shift;
+done
+nr="$1"
+
+if [[ "$nr" =~ ^[x0-9A-Fa-f]+:[x0-9A-Fa-f]+$ ]]; then
+	nrf=${nr/:*/}
+	nrt=${nr/*:/}
+	printf "From: (0x%X to 0x%X) (0o%o to 0o%o) (%d. to %d.)\n" "$nrf" "$nrt" "$nrf" "$nrt" "$nrf" "$nrt"
+	nrf="$(printf "%d" "$nrf")"
+	for (( ; nrf <= nrt ; ++nrf)); do
+		prnt_bin "$nrf" "$fm" "$sp" "$wd";
+	done
+elif [[ ! "$nr" =~ ^[x0-9A-Fa-f]+$ ]]; then
+	printf "Usage: %s [OPTION] [NR ... | FROM:TO]\n" "$(basename $0)"
+	printf "\nPrint numbers in various numeral representaions.\n\n"
+	printf "  g  <NR>         Group.\n"
+	printf "  w  <NR>         Width.\n"
+	printf "  gw <NR>  <NR>   Group - Width.\n"
+	printf "  wg <NR>  <NR>   Width - Group.\n"
+	printf "  f  <FMT>        Print.\n"
+	printf "\n<FMT>\n"
+	printf " d: Decimal\n"
+	printf " b: Binary\n"
+	printf " x: Hexadecimal\n"
+	printf " o: Octal\n"
+	printf "\nFor ranges use N:N example: 0:0xF\n"
+	printf "Input numbers can be either decimal or hex\n"
+
+	exit 1
+else
+	while [[ -n "$1" ]]; do
+		prnt_bin "$(printf "%d" "$1")" "$fm" "$sp" "$wd"
+		shift
+	done
+fi
