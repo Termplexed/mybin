@@ -2,7 +2,7 @@
 
 Various linux scripts
 
-### `binhelp` <sup>(bash|awk)</sup> : print number(s) in various representaions.
+### [`binhelp`](https://github.com/Termplexed/mybin/discussions/3) <sup>(bash|awk)</sup> : print number(s) in various representaions.
 ```
 $ binhelp 136:139
 From: (0x88 to 0x8B) (0o210 to 0o213) (136. to 139.)
