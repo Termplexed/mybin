@@ -29,4 +29,10 @@ Modify script to meet your needs.
 
 Example:
 
-`lstor some.torrent`
+```sh
+$ lstor 944cc141baf25155bfb110273140f1e0e6687f4b.torrent 
+944cc141baf25155bfb110273140f1e0e6687f4b.torrent
+Total: 690.324 MiB (723,857,408) in 1 files
+     690.324 MiB  archlinux-2021.01.01-x86_64.iso
+--------------------------------------
+```
